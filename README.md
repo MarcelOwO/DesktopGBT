@@ -1,1 +1,1 @@
-Small project to add a desktop implementation of ChatGBT
+Small project to make a desktop implementation of ChatGBT
