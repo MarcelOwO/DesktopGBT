@@ -8,16 +8,16 @@ internal static class Crypt
     internal static string GenerateRandomString(int length)
     {
         const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        StringBuilder res = new StringBuilder();
-        using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+        var res = new StringBuilder();
+        using (var rng = new RNGCryptoServiceProvider())
         {
-            byte[] uintBuffer = new byte[4];
+            var uintBuffer = new byte[4];
 
             while (length-- > 0)
             {
                 rng.GetBytes(uintBuffer);
-                uint num = BitConverter.ToUInt32(uintBuffer, 0);
-                res.Append(valid[(int)(num % (uint)valid.Length)]);
+                var num = BitConverter.ToUInt32(uintBuffer, 0);
+                res.Append(valid[(int) (num % (uint) valid.Length)]);
             }
         }
 
@@ -26,19 +26,19 @@ internal static class Crypt
 
     internal static string Decrypt(byte[] cipherText, string encryptionKey, string iv)
     {
-        string plaintext = null;
+        var plaintext = string.Empty;
 
-        using (Aes aes = Aes.Create())
+        using (var aes = Aes.Create())
         {
             aes.Key = Encoding.UTF8.GetBytes(encryptionKey);
             aes.IV = Encoding.UTF8.GetBytes(iv);
 
-            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+            var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-            using (MemoryStream ms = new MemoryStream(cipherText))
+            using (var ms = new MemoryStream(cipherText))
             {
-                using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
-                using (StreamReader sr = new StreamReader(cs))
+                using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                using (var sr = new StreamReader(cs))
                 {
                     plaintext = sr.ReadToEnd();
                 }
@@ -51,17 +51,17 @@ internal static class Crypt
     internal static byte[] Encrypt(string clearText, string encryptionKey, string iv)
     {
         byte[] encrypted;
-        using (Aes aes = Aes.Create())
+        using (var aes = Aes.Create())
         {
             aes.Key = Encoding.UTF8.GetBytes(encryptionKey);
             aes.IV = Encoding.UTF8.GetBytes(iv);
 
-            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+            var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
-                using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
-                using (StreamWriter sw = new StreamWriter(cs))
+                using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                using (var sw = new StreamWriter(cs))
                 {
                     sw.Write(clearText);
                 }
@@ -72,11 +72,10 @@ internal static class Crypt
 
         return encrypted;
     }
-    
+
     public static bool DoesEnvironmentVariableExist(string variableName)
     {
-        string variableValue = Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User);
+        var variableValue = Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User);
         return variableValue != null;
     }
-
 }
